@@ -38,9 +38,12 @@ const auth = () => {
 };
 
 const addText = (text) => {
-    const e = document.createElement('div');
-    e.innerText = text;
-    document.body.appendChild(e);
+    const html = `
+        <div>
+            ${text}
+        </div>
+    `;
+    document.body.innerHTML += html;
 };
 
 const getCards = (cardsRef, gameName) => {
