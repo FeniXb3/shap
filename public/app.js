@@ -2,6 +2,18 @@ document.addEventListener("DOMContentLoaded", event => {
     const app = firebase.app();
 
     auth();
+
+    const db = firebase.firestore();
+    const cardsRef = db.collection('cards');
+
+    const query = cardsRef.where('game', '==', 'Catan');
+    query.get()
+        .then(cards => {
+            cards.forEach(doc => {
+                const data = doc.data();
+                addText(`${data.name} [${data.description}]`);
+            });
+        });
 });
 
 const auth = () => {
