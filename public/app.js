@@ -1,5 +1,5 @@
 import {auth} from "./auth.js";
-// import {displayCards} from "./cards.js";
+import {getCards, shuffle} from "./cards.js";
 import {onGameUpdate, updateGame} from "./games.js";
 
 document.addEventListener("DOMContentLoaded", event => {
@@ -11,7 +11,29 @@ document.addEventListener("DOMContentLoaded", event => {
             const db = firebase.firestore();
         
             onGameUpdate(db, gameName, doc => {
-                console.log(doc.data());
+                const data = doc.data();
+
+                if(!data.decks && Object.keys(data.players).length == 3) {
+                    //displayCards(db);
+                    let decks = {};
+                    getCards(db, 'Catan', (cards) => {
+                        cards.forEach(doc => {
+                            const data = doc.data();
+                            if (!decks[data.type]) {
+                                decks[data.type] = [data];
+                            } else {
+                                decks[data.type].push(data);
+                            }
+                        });
+                        decks['Karta rozwoju'] = shuffle(decks['Karta rozwoju']);
+                        updateGame(db, gameName, { decks });
+                    });
+                } else if (data.decks) {
+                    console.log(`Karty są! ${data.decks}`);
+                    // add draw buttons (surowece/rozwój)
+                    console.log(firebase.auth().currentUser);
+                }
+                
             });
 
             firebase.auth().onAuthStateChanged(user => {
@@ -22,7 +44,8 @@ document.addEventListener("DOMContentLoaded", event => {
                     };
 
                     data.players[uid] = {
-                        id: uid
+                        id: uid,
+                        hand: []
                     };
                     updateGame(db, gameName, data);
                 }
