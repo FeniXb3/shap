@@ -15,6 +15,15 @@ export const addCards = (cardsRef, cards) => {
     });
 };
 
+export const displayCards = (cardsRef) => {
+    getCards(cardsRef, 'Catan', (cards) => {
+        const parent = document.querySelector('.row');
+        cards.forEach(doc => {
+            renderCard(parent, doc.data());
+        });
+    });
+};
+
 export const renderCard = (parent, data) => {
     const {type, subType, description, name} = data;
     const element = document.createElement('fragment');

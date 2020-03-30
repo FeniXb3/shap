@@ -1,20 +1,32 @@
 import {auth} from "./auth.js";
-import {getCards, renderCard} from "./cards.js";
+// import {displayCards} from "./cards.js";
+import {onGameUpdate, updateGame} from "./games.js";
 
 document.addEventListener("DOMContentLoaded", event => {
-    auth();
+    (async () => {          
+        auth();
+    
+        const gameName = window.location.search.substr(1, );
+        if(gameName) {
+            const db = firebase.firestore();
+        
+            onGameUpdate(db, gameName, doc => {
+                console.log(doc.data());
+            });
 
-    const db = firebase.firestore();
-    const cardsRef = db.collection('cards');
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    const { uid } = user;
+                    let data = {
+                        players : {}
+                    };
 
-    displayCards(cardsRef);
+                    data.players[uid] = {
+                        id: uid
+                    };
+                    updateGame(db, gameName, data);
+                }
+            });
+        }
+    })();
 });
-
-const displayCards = (cardsRef) => {
-    getCards(cardsRef, 'Catan', (cards) => {
-        const parent = document.querySelector('.row');
-        cards.forEach(doc => {
-            renderCard(parent, doc.data());
-        });
-    });
-};
