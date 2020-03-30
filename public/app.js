@@ -1,19 +1,10 @@
 document.addEventListener("DOMContentLoaded", event => {
-    const app = firebase.app();
-
     auth();
 
     const db = firebase.firestore();
     const cardsRef = db.collection('cards');
 
-    const query = cardsRef.where('game', '==', 'Catan');
-    query.get()
-        .then(cards => {
-            cards.forEach(doc => {
-                const data = doc.data();
-                addText(`${data.name} [${data.description}]`);
-            });
-        });
+    getCards(cardsRef, 'Catan');
 });
 
 const auth = () => {
@@ -51,3 +42,24 @@ const addText = (text) => {
     e.innerText = text;
     document.body.appendChild(e);
 };
+
+const getCards = (cardsRef, gameName) => {
+    const query = cardsRef.where('game', '==', gameName);
+    query.get()
+        .then(cards => {
+            cards.forEach(doc => {
+                const {type, subType, description, name} = doc.data();
+                addText(`${type} (${subType}) - ${name} [${description}]`);
+            });
+        });
+};
+
+const addCards = (cardsRef, cards) => {
+    cards.forEach(c => {
+        const {amount, data} = c;
+        for (let i = 0; i < amount; i++) {
+            cardsRef.doc().set(data);
+        }
+    });
+};
+
