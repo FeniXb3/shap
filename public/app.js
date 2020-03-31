@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", event => {
                 const data = doc.data();
 
                 if(!data.decks && Object.keys(data.players).length == 3) {
-                    //displayCards(db);
                     let decks = {};
                     getCards(db, 'Catan', (cards) => {
                         cards.forEach(doc => {
@@ -29,8 +28,13 @@ document.addEventListener("DOMContentLoaded", event => {
                         updateGame(db, gameName, { decks });
                     });
                 } else if (data.decks) {
-                    console.log(`Karty są! ${data.decks}`);
-                    // add draw buttons (surowece/rozwój)
+                    // add draw buttons (surowece/rozwój)  array.shift()
+                    const html = `
+                        <button id="draw" class="btn-large waves-effect waves-light orange">Draw</button>
+                    `;
+                    const el = document.createElement('fragment');
+                    el.innerHTML = html;
+                    document.body.appendChild(el);
                     console.log(firebase.auth().currentUser);
                 }
                 
